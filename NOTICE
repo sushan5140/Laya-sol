@@ -1,0 +1,12 @@
+Laya-Sol independent evaluator.
+
+The exact metric fixture snippets in tests/fixtures/upstream_ece.txt and
+tests/fixtures/upstream_metric_cell14.txt are copied from NandhaKishorM/laya,
+commit 2e4d9c87e8b1621deb344eac7de5c7258f32f849, licensed under Apache-2.0.
+Original authors and contributors: Convai Innovations and Laya contributors.
+Source paths: laya/common.py; notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb
+(evaluation metric cell 14, ending before comparison_data).
+These snippets are used only for offline test parity; no training code is executed.
+The manual development cases are from LocalLLaMA/typed-decisions, revision
+d0e2f0c42fef86cc15d1688d25a19f5ba7c85b18, dataset card license Apache-2.0.
+Sources are credited in benchmark/sources.json and reports/methodology.md.

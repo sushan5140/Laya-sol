@@ -1,0 +1,11 @@
+def ece_score(conf: np.ndarray, correct: np.ndarray, bins: int = 15) -> float:
+    """Expected Calibration Error across confidence bins."""
+    if len(conf) == 0:
+        return float("nan")
+    edges = np.linspace(0, 1, bins + 1)
+    e = 0.0
+    for i, (lo, hi) in enumerate(zip(edges[:-1], edges[1:])):
+        sel = (conf >= lo if i == 0 else conf > lo) & (conf <= hi)
+        if sel.any():
+            e += sel.mean() * abs(conf[sel].mean() - correct[sel].mean())
+    return float(e)

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laya-sol"
+version = "0.1.0"
+description = "Independent GPT-6.1 Sol evaluator for Laya typed decisions"
+requires-python = ">=3.12"
+dependencies = ["openai==3.24.0", "pyarrow==25.0.1"]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "ruff==0.16.10", "mypy==2.4.0", "numpy==2.5.3"]
+
+[tool.setuptools.packages.find]
+include = ["benchmark*", "adapters*", "scripts*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+check_untyped_defs = true
+ignore_missing_imports = true
