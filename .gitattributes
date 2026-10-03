@@ -1,3 +1,4 @@
 * text=auto eol=lf
 *.parquet binary
 tests/fixtures/*.txt -whitespace
+results/manual_dev20_gpt61sol_predictions.json -text -whitespace
