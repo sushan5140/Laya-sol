@@ -1,4 +1,4 @@
-# H5 protocol frozen before execution
+# H5 protocol frozen before execution — final trigger
 name: Build H5 fresh validation inputs
 
 on:
