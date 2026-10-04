@@ -13,7 +13,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from benchmark.io import dump_json, file_hash, load_jsonl
+from benchmark.io import digest, dump_json, encode, file_hash, load_jsonl
 from benchmark.schema import ModelCase
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -97,6 +97,18 @@ def export() -> dict:
     output = ROOT / "artifacts/fresh_validation_100_model_inputs.json"
     dump_json(output, visible)
 
+    identity_index = [
+        {
+            "case_index": i,
+            "case_id": case["id"],
+            "workflow": case["workflow"],
+            "payload_sha256": digest(encode(payload)),
+        }
+        for i, (case, payload) in enumerate(zip(selected, visible, strict=True))
+    ]
+    identity_path = ROOT / "reports/fresh_validation_100_identity_index.json"
+    dump_json(identity_path, identity_index)
+
     manifest = {
         "protocol": "laya-score-validation-v1",
         "source_split": "train",
@@ -113,6 +125,9 @@ def export() -> dict:
         "workflow_counts": dict(Counter(c["workflow"] for c in selected)),
         "contains_gold": False,
         "model_inputs_sha256": file_hash(output),
+        "identity_index_file": "reports/fresh_validation_100_identity_index.json",
+        "identity_index_sha256": file_hash(identity_path),
+        "identity_index_derived_directly_from_frozen_train_inputs": True,
     }
     manifest_path = ROOT / "reports/fresh_validation_100_manifest.json"
     dump_json(manifest_path, manifest)
