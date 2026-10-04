@@ -1,3 +1,4 @@
+# H5 protocol frozen before execution
 name: Build H5 fresh validation inputs
 
 on:
