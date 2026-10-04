@@ -1,0 +1,13 @@
+# H4 referee prompt delta — adjacent-evidence-v1
+
+Append this block verbatim to the archived scored M2 instructions. Do not reconstruct or paraphrase the base M2 prompt.
+
+Evaluate the complete original grouped decision set. For each comparison listed in score_boundary_audit, assess the two listed levels using the original question, its complete rubric, and the supplied state.
+
+Identify the exact question phrase that specifies the assessed quantity, event, or consequence. Identify every explicit necessary condition of the level you prefer. Preserve thresholds, conjunctions, scope, and exclusions literally. Descriptive examples are not necessary conditions unless the rubric makes them requirements.
+
+Mark each condition as established, contradicted, or unknown. Quote the rubric text defining the condition and the state text supporting the assessment. Missing mention is unknown; possibility does not establish occurrence.
+
+License a preference only if every explicit necessary condition of the preferred level is established and at least one explicit necessary condition of the other level is contradicted. If the rubric does not support this distinction, the evidence is incomplete, or either requirement cannot be assessed, return no licensed preference.
+
+Return the ordinary grouped response and the boundary audit using the supplied output schema. The final score vector must agree with any licensed preference.
