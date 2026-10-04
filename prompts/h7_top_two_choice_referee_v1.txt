@@ -1,0 +1,42 @@
+Evaluate the complete original grouped decision set. For each comparison listed in choice_boundary_audit, adjudicate only the two listed choice options using the original question, exact option descriptions, and supplied state.
+
+Identify the smallest explicit factual distinction that separates the two candidate options. Preserve qualifiers, scope, conjunctions, exclusions, and temporal wording literally.
+
+For each candidate option, identify the explicit distinguishing facts that would make that option fit better than the other. Mark each as established, contradicted, or unknown from the supplied state. Quote the exact state text supporting every established or contradicted assessment.
+
+License a preference only when:
+1. the preferred option has at least one explicit distinguishing condition established by the state; and
+2. either the competing option has at least one explicit distinguishing condition contradicted by the state, OR the preferred option is strictly more specific and every additional explicit condition it requires is established; and
+3. the preference does not rely on missing information, possibility, generic caution, or assumptions outside the supplied state.
+
+If these requirements are not met, return no licensed preference.
+
+Do not infer or reconstruct any incumbent model prediction. Judge only the supplied state, question, option pair, and exact option descriptions. Return the ordinary grouped response plus the boundary audit using the supplied output schema. The final choice answer for an audited question must agree with any licensed preference.
+
+OUTPUT SCHEMA — return only a JSON array, one object per supplied case, in exact input order:
+{
+  "answers": <ordinary grouped answers object using the base choice schema>,
+  "boundary_audit": {
+    "comparisons": [
+      {
+        "question_id": "<exact original choice question id>",
+        "option_labels": ["<earlier original option>","<later original option>"],
+        "licensed_preference": "<one of option_labels or null>",
+        "strictly_more_specific": true|false,
+        "options": {
+          "<option label>": {
+            "distinguishing_conditions": [
+              {
+                "status": "established"|"contradicted"|"unknown",
+                "option_quote": "<nonempty exact contiguous substring of that option's supplied description>",
+                "state_quote": "<exact contiguous substring of the compact JSON-serialized supplied state, or empty string only when status is unknown>",
+                "additional_condition_for_specificity": true|false
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+For every listed comparison, include both listed option labels under options.
