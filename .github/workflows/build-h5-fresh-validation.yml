@@ -1,0 +1,68 @@
+name: Build H5 fresh validation inputs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-h5-fresh-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-lock.txt
+
+      - name: Prepare pinned benchmark
+        run: python -m benchmark.prepare
+
+      - name: Select H5 fresh validation cases
+        run: python -m scripts.select_h5_fresh_validation
+
+      - name: Verify gold-blind H5 tranche
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          m=json.loads(Path("reports/h5_fresh_validation_100_manifest.json").read_text())
+          idx=json.loads(Path("reports/h5_fresh_validation_100_identity_index.json").read_text())
+
+          assert m["cases"] == 100
+          assert m["contains_gold"] is False
+          assert m["excluded_total_unique"] == 120
+          assert len(m["case_ids_in_output_order"]) == 100
+          assert len(idx) == 100
+          assert [x["case_id"] for x in idx] == m["case_ids_in_output_order"]
+          assert set(m["case_ids_in_output_order"]).isdisjoint(m["excluded_dev20_ids"])
+          assert set(m["case_ids_in_output_order"]).isdisjoint(m["excluded_first_fresh100_ids"])
+          assert all(v == 25 for v in m["workflow_counts"].values())
+          assert all("payload_sha256" in x for x in idx)
+          print("H5 fresh tranche verification PASS")
+          PY
+
+      - name: Commit generated non-gold artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add artifacts/h5_fresh_validation_100_model_inputs.json reports/h5_fresh_validation_100_manifest.json reports/h5_fresh_validation_100_identity_index.json
+          if git diff --cached --quiet; then
+            echo "No generated changes."
+          else
+            git commit -m "data: freeze second fresh 100-case H5 tranche"
+            git push
+          fi
