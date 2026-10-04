@@ -31,7 +31,7 @@ jobs:
         run: python -m benchmark.prepare
 
       - name: Select fresh validation cases
-        run: python scripts/select_fresh_validation.py
+        run: python -m scripts.select_fresh_validation
 
       - name: Verify no gold is staged
         run: |
