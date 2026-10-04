@@ -37,6 +37,7 @@ jobs:
         run: |
           test -f artifacts/fresh_validation_100_model_inputs.json
           test -f reports/fresh_validation_100_manifest.json
+          test -f reports/fresh_validation_100_identity_index.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -45,13 +46,17 @@ jobs:
           assert m["contains_gold"] is False
           assert all(v == 25 for v in m["workflow_counts"].values())
           assert len(m["case_ids_in_output_order"]) == 100
+          idx=json.loads(Path("reports/fresh_validation_100_identity_index.json").read_text())
+          assert len(idx) == 100
+          assert [row["case_id"] for row in idx] == m["case_ids_in_output_order"]
+          assert all("payload_sha256" in row for row in idx)
           PY
 
       - name: Commit generated non-gold artifacts
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add artifacts/fresh_validation_100_model_inputs.json reports/fresh_validation_100_manifest.json
+          git add artifacts/fresh_validation_100_model_inputs.json reports/fresh_validation_100_manifest.json reports/fresh_validation_100_identity_index.json
           if git diff --cached --quiet; then
             echo "No generated changes."
           else
