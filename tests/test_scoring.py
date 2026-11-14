@@ -123,3 +123,11 @@ def test_duplicates_unknown_and_mismapped_ids_refused(sample, final_answers):
         score(cases, gold, [{**records[0], "decision_id": "unknown"}])
     with pytest.raises(ValueError):
         score(cases, gold, [{**records[0], "case_id": "wrong"}])
+
+
+def test_empty_and_duplicate_cases_are_rejected(sample, final_answers):
+    cases, gold, records = fixture(sample, final_answers)
+    with pytest.raises(ValueError, match="empty case batch"):
+        score([], [], [])
+    with pytest.raises(ValueError, match="Duplicate case IDs"):
+        score(cases + cases, gold, records)
