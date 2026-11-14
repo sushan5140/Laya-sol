@@ -1,0 +1,40 @@
+name: Scoring regression
+
+on:
+  pull_request:
+    paths:
+      - 'benchmark/score.py'
+      - 'benchmark/schema.py'
+      - 'benchmark/io.py'
+      - 'tests/conftest.py'
+      - 'tests/test_scoring.py'
+      - 'tests/fixtures/**'
+      - '.github/workflows/scoring-regression.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'benchmark/score.py'
+      - 'benchmark/schema.py'
+      - 'benchmark/io.py'
+      - 'tests/conftest.py'
+      - 'tests/test_scoring.py'
+      - 'tests/fixtures/**'
+      - '.github/workflows/scoring-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scorer test tools
+        run: python -m pip install pytest==9.1.1 numpy==2.5.3 ruff==0.16.10
+      - name: Lint scorer and regression tests
+        run: python -m ruff check benchmark/score.py tests/test_scoring.py
+      - name: Run scorer regression tests (offline)
+        run: python -m pytest -q tests/test_scoring.py
