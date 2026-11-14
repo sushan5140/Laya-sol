@@ -39,6 +39,11 @@ def gold_vector(question: dict, gold: dict) -> list[float]:
 
 
 def score(cases: list[dict], gold_rows: list[dict], records: list[dict]) -> dict[str, Any]:
+    if not cases:
+        raise ValueError("Cannot score an empty case batch")
+    case_ids = [case["id"] for case in cases]
+    if len(case_ids) != len(set(case_ids)):
+        raise ValueError("Duplicate case IDs would double-count decisions")
     gold_by_id = {g["id"]: g["gold"] for g in gold_rows}
     if len(gold_by_id) != len(gold_rows) or set(gold_by_id) != {c["id"] for c in cases}:
         raise ValueError("Gold/case IDs do not match uniquely")
